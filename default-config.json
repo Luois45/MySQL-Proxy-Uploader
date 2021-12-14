@@ -5,5 +5,8 @@
         "ip": "mysql-ip",
         "port": "mysql-port",
         "database": "mysql-database"
+    },
+    "proxy": {
+        "file": "proxies.txt"
     }
 }

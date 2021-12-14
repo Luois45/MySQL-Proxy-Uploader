@@ -4,17 +4,18 @@ import mysql.connector
 with open('config.json', 'r') as configFile:
     config = json.load(configFile)
 
-database = test_mysql = mysql.connector.connect(
-    user=config['mysql']['username'],
-    password=config['mysql']['password'],
-    host=config['mysql']['ip'],
-    port=config['mysql']['port'],
-    database=config['mysql']['database'])
+cnx = mysql.connector.connect(user=config['mysql']['username'],
+                              password=config['mysql']['password'],
+                              host=config['mysql']['ip'],
+                              port=config['mysql']['port'],
+                              database=config['mysql']['database'])
+print(f"MySQL: Logged in as {cnx.user}")
+cursor = cnx.cursor()
 
 
 def executeSQL(command):
     cursor.execute(command)
-    database.commit()
+    cnx.commit()
 
 
 def searchSQL(command):
@@ -24,14 +25,11 @@ def searchSQL(command):
     return cursor.fetchall()
 
 
-print(f"MySQL: Logged in as {database.user}")
-cursor = database.cursor(buffered=False)
-
 executeSQL(
     'CREATE TABLE IF NOT EXISTS `proxies` (`id` int NOT NULL AUTO_INCREMENT PRIMARY KEY, `ip` varchar(256) DEFAULT NULL, `port` MEDIUMINT DEFAULT NULL, `username` varchar(256) DEFAULT NULL, `password` varchar(256) DEFAULT NULL, `inuse` BOOLEAN DEFAULT False) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4'
 )
 
-with open('proxies.txt', 'r') as proxiesFile:
+with open(config['proxy']['file'], 'r') as proxiesFile:
     for proxy in proxiesFile:
         proxyList = proxy.replace('\n', '').split(':')
         proxyIP = proxyList[0]
@@ -45,3 +43,5 @@ with open('proxies.txt', 'r') as proxiesFile:
                 f"INSERT INTO proxies (ip, port, username, password) VALUES ('{proxyIP}', '{proxyPort}', '{proxyUsername}', '{proxyPassword}');"
             )
 print('Uploaded proxies to MySQL database')
+
+cnx.close()
