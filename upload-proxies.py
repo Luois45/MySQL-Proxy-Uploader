@@ -14,11 +14,13 @@ cursor = cnx.cursor()
 
 
 def executeSQL(command):
+    """Executes a given SQL string"""
     cursor.execute(command)
     cnx.commit()
 
 
 def searchSQL(command):
+    """Executes a given SQL string and returns response"""
     # cursor.execute(f"SELECT * FROM items WHERE name = ''")
     # productinfo = cart_cursor.fetchall()[0]
     cursor.execute(command)
